@@ -65,6 +65,7 @@ ModelImporter:
     4300012: Circle
     4300014: Cylinder.001
     4300016: Plane
+    4300018: Cylinder
   externalObjects:
   - first:
       type: UnityEngine:Material
