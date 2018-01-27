@@ -38,7 +38,6 @@ public class GameManager : MonoBehaviour {
         ghostRounds.Add(ghostList2);
         ghostRounds.Add(ghostList3);
         ghostRounds.Add(ghostList4);
-
 	}
 	
 	// Update is called once per frame
