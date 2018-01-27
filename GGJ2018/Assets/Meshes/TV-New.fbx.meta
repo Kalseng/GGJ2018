@@ -48,6 +48,7 @@ ModelImporter:
     2300016: Plane
     2300018: Plane.002
     2300020: Plane.003
+    2300022: //RootNode
     3300000: Circle
     3300002: Circle.001
     3300004: Circle.002
@@ -59,6 +60,7 @@ ModelImporter:
     3300016: Plane
     3300018: Plane.002
     3300020: Plane.003
+    3300022: //RootNode
     4300000: Circle.007
     4300002: Circle.006
     4300004: Circle.003
