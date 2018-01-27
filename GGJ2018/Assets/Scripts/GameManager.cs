@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour {
     // Publicly assigned variables for game control.
     public Ghost g1;
     public AntennaRotator ar;
+    public Transform vt;
+    public float maxVacCharge; // In seconds
 
     // For managing interaction on/off state.
     private bool interactableTV = false;
@@ -32,16 +34,20 @@ public class GameManager : MonoBehaviour {
     // Round index
     public int roundIndex;
 
+    
+
 	// Use this for initialization
 	void Start () {
+        /*
         ghostRounds.Add(ghostList1);
         ghostRounds.Add(ghostList2);
         ghostRounds.Add(ghostList3);
         ghostRounds.Add(ghostList4);
+        */
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 
         if (Input.GetButtonDown("Start"))
         {
@@ -88,6 +94,21 @@ public class GameManager : MonoBehaviour {
         if (leftDiff < 5.0f || rightDiff < 5.0f)
         {
             GamePad.SetVibration(0, 1.0f - leftDiff / 5.0f, 1.0f - rightDiff / 5.0f);
+            if (leftDiff + rightDiff < 4)
+            {
+                g1.charging = true;
+                g1.FillVacTube();
+                if (g1.vacTube.localScale.z >= 1)
+                {
+                    Debug.Log("YOU WON");
+                    interactableTV = false;
+                }
+            }
+            else
+            {
+                g1.CheckVacTube();
+                g1.charging = false;
+            }
         }
         else
         {
