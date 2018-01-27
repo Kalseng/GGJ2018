@@ -18,6 +18,8 @@ ModelImporter:
     100020: Plane.003
     100022: //RootNode
     100024: Camera
+    100026: Circle.009
+    100028: TableCloth
     400000: Circle
     400002: Circle.001
     400004: Circle.002
@@ -31,12 +33,15 @@ ModelImporter:
     400020: Plane.003
     400022: //RootNode
     400024: Camera
+    400026: Circle.009
+    400028: TableCloth
     2000000: Camera
     2100000: Metal
     2100002: TubeFoil
     2100004: TubeGlass
     2100006: Wood
     2100008: TVScreen
+    2100010: TableCloth
     2300000: Circle
     2300002: Circle.001
     2300004: Circle.002
@@ -49,6 +54,8 @@ ModelImporter:
     2300018: Plane.002
     2300020: Plane.003
     2300022: //RootNode
+    2300024: Circle.009
+    2300026: TableCloth
     3300000: Circle
     3300002: Circle.001
     3300004: Circle.002
@@ -61,6 +68,8 @@ ModelImporter:
     3300018: Plane.002
     3300020: Plane.003
     3300022: //RootNode
+    3300024: Circle.009
+    3300026: TableCloth
     4300000: Circle.007
     4300002: Circle.006
     4300004: Circle.003
@@ -71,6 +80,8 @@ ModelImporter:
     4300014: Cylinder.001
     4300016: Plane
     4300018: Cylinder
+    4300020: Circle.009
+    4300022: TableCloth
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -82,6 +93,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: TVScreen
     second: {fileID: 2100000, guid: 7530c088c0a1944c1982ad903ac1cc98, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TableCloth
+    second: {fileID: 2100000, guid: 6311967e072234562ac2d6fb58ecdd6f, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
