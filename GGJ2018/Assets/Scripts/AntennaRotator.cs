@@ -17,6 +17,11 @@ public class AntennaRotator : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        
+	}
+
+    public void ProessRotation()
+    {
         float lhDegree = Input.GetAxis("HorizontalLeft") * -1 * sensitivityModifier;
         float lvDegree = Input.GetAxis("VerticalLeft") * -1 * sensitivityModifier;
 
@@ -25,14 +30,5 @@ public class AntennaRotator : MonoBehaviour {
 
         leftAntenna.localRotation = Quaternion.Euler(leftAntennaRotationStart + new Vector3(lhDegree, lvDegree, 0));
         rightAntenna.localRotation = Quaternion.Euler(rightAntennaRotationStart + new Vector3(rhDegree, rvDegree, 0));
-
-        if (Input.GetButtonDown("Vibrate"))
-        {
-            GamePad.SetVibration(0, 1, 1);
-        }
-        if (Input.GetButtonUp("Vibrate"))
-        {
-            GamePad.SetVibration(0, 0, 0);
-        }
-	}
+    }
 }
