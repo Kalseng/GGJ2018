@@ -17,6 +17,7 @@ ModelImporter:
     100018: Plane.002
     100020: Plane.003
     100022: //RootNode
+    100024: Camera
     400000: Circle
     400002: Circle.001
     400004: Circle.002
@@ -29,6 +30,8 @@ ModelImporter:
     400018: Plane.002
     400020: Plane.003
     400022: //RootNode
+    400024: Camera
+    2000000: Camera
     2100000: Metal
     2100002: TubeFoil
     2100004: TubeGlass
