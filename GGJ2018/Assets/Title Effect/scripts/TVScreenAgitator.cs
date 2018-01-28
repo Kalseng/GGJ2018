@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TitleWordSwapper : MonoBehaviour {
+public class TVScreenAgitator : MonoBehaviour {
 
 	public GameObject	titleText,
 						titleTextContainer,
-						scanlinePrefab;
+						scanlinePrefab,
+						staticImage;
 	public float 	offset,
 					overshootMaximum,
 					minTweenTime,
@@ -16,13 +17,18 @@ public class TitleWordSwapper : MonoBehaviour {
 					shiftXMaxAmount,
 					shiftYMaxAmount,
 					scanlineTweenTime,
-					scanlineTweenAmount;
+					scanlineTweenAmount,
+					staticXMaxAmount,
+					staticYMaxAmount,
+					staticMinTweenTime,
+					staticMaxTweenTime;
 
 	private bool swapped;
 
 	private void Start() {
 		StartCoroutine(swap());
 		StartCoroutine(shift());
+		StartCoroutine(staticShift());
 		StartCoroutine(scan());
 	}
 
@@ -50,6 +56,19 @@ public class TitleWordSwapper : MonoBehaviour {
 
 		yield return new WaitForSeconds(tweenTime + waitTime);
 		StartCoroutine(shift());
+	}
+	
+	private IEnumerator staticShift() {
+
+		float	tweenTime = Random.Range(staticMinTweenTime, staticMaxTweenTime),
+				shiftYAmount = Random.Range(-staticYMaxAmount, staticYMaxAmount),
+				shiftXAmount = Random.Range(-staticXMaxAmount, staticXMaxAmount);
+
+		LeanTween.moveY(staticImage, shiftYAmount, tweenTime).setEaseInOutBounce();
+		LeanTween.moveX(staticImage, shiftXAmount, tweenTime).setEaseInOutBounce();
+
+		yield return new WaitForSeconds(tweenTime);
+		StartCoroutine(staticShift());
 	}
 
 	private IEnumerator scan() {
