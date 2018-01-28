@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour {
 
     // Publicly assigned variables for game control.
     public Ghost g1;
+    public Texture2D tempTestGhostFrame1, tempTestGhostFrame2;
     public AntennaRotator ar;
     public Transform dial; // Rotates on x axis
     public Transform vt;
@@ -146,8 +147,13 @@ public class GameManager : MonoBehaviour {
 
             leftDiff = 180.0f - leftDiff;
             rightDiff = 180.0f - rightDiff;
+<<<<<<< HEAD
             
             // Very good code that changes the static intensity based on how close you are to succeeding
+=======
+
+            // Change the static intensity based on how close you are to succeeding
+>>>>>>> 6af895dc76ee9f985f2befebfe5c57d14c822789
             TVScreenPictureController tvspc = FindObjectOfType<TVScreenPictureController>();
             float intensity = (leftDiff + rightDiff) / 36;
             tvspc.setStaticIntensity(intensity);
@@ -228,6 +234,15 @@ public class GameManager : MonoBehaviour {
 
         roundStartTime = Time.time;
 
+<<<<<<< HEAD
+=======
+        // Switch from "press _ to start" to controls
+        StartCoroutine(showControls());
+
+        // Switch to showing ghost image
+        TVScreenPictureController tvspc = FindObjectOfType<TVScreenPictureController>();
+        tvspc.setGhostImages(tempTestGhostFrame1, tempTestGhostFrame2);
+>>>>>>> 6af895dc76ee9f985f2befebfe5c57d14c822789
     }
 
     IEnumerator NextRound()
