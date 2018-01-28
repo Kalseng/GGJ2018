@@ -9,9 +9,14 @@ public class GameManager : MonoBehaviour {
     // Publicly assigned variables for game control.
     public Ghost g1;
     public AntennaRotator ar;
+    public Transform dial; // Rotates on x axis
     public Transform vt;
     public GameObject pressToStart, controls;
     public float maxVacCharge; // In seconds
+
+    // For channel/gamepad management
+    public GamePadState gpState;
+    public int currentChannel = 0;
 
     // For managing interaction on/off state.
     private bool interactableTV = false;
@@ -29,39 +34,54 @@ public class GameManager : MonoBehaviour {
     private float roundStartTime;
 
     // Lists of ghosts for rounds, denomonated by last number.
+    // In the inspector, when assigning ghosts to spaces in the list, keep
+    // in mind the ghost in index 0 is the "main ghost", and subsequent ghosts
+    // are "sidequest ghosts".
     private List<List<Ghost>> ghostRounds;
     public List<Ghost> ghostList1, ghostList2, ghostList3, ghostList4;
 
     // Round index
-    public int roundIndex;
-
-    
+    public int roundIndex = 0;
 
 	// Use this for initialization
 	void Start () {
-        /*
+
+        // Set gpState to the gamepad state of the first player.
+        gpState = GamePad.GetState(0);
+
+
+        // Instantiates ghostRounds list and stores other ghost lists
+        ghostRounds = new List<List<Ghost>>();
+
         ghostRounds.Add(ghostList1);
         ghostRounds.Add(ghostList2);
         ghostRounds.Add(ghostList3);
         ghostRounds.Add(ghostList4);
-        */
+        
 
         // Don't show controls at start
         controls.SetActive(false);
 	}
 	
 	// Update is called once per frame
-	void FixedUpdate () {
+	void FixedUpdate ()
+    {
+        // Gamepad state needs updated every frame.
+        gpState = GamePad.GetState(0);
 
+        // Debugging tool for initiating a dummie round
         if (Input.GetButtonDown("Start"))
         {
             FreshStart();
         }
 
+        // Controls TV interaction. Deactivates sex toy mode on 
+        // controller if not in use.
         if (interactableTV)
         {
-            ProcessAntennae();
+            CheckGhosts();
             ProcessTime();
+            ProcessChannel();
         }
         else{
             GamePad.SetVibration(0, 0, 0);
@@ -71,6 +91,7 @@ public class GameManager : MonoBehaviour {
 
     void ProcessTime()
     {
+        // Manage round timer via "clock" fill percentage
         if(Time.time - roundStartTime >= roundLength){
             clock.fillAmount = 0.0f;
             interactableTV = false;
@@ -78,46 +99,78 @@ public class GameManager : MonoBehaviour {
         clock.fillAmount = 1 - (Time.time - roundStartTime) / roundLength;
     }
 
-    void ProcessAntennae ()
+    void CheckGhosts ()
     {
 
         ar.ProessRotation();
 
-        ghostLeftQuat = Quaternion.Euler(g1.leftFrequency);
-        ghostRightQuat = Quaternion.Euler(g1.rightFrequency);
-
-        antennaLeftQuat = Quaternion.Euler(ar.leftAntenna.eulerAngles);
-        antennaRightQuat = Quaternion.Euler(ar.rightAntenna.eulerAngles);
-
-        leftDiff = Quaternion.Angle(ghostLeftQuat, antennaLeftQuat);
-        rightDiff = Quaternion.Angle(ghostRightQuat, antennaRightQuat);
-
-        leftDiff = 180.0f - leftDiff;
-        rightDiff = 180.0f - rightDiff;
-
-        if (leftDiff < 5.0f || rightDiff < 5.0f)
+        foreach (Ghost g in ghostRounds[roundIndex])
         {
-            GamePad.SetVibration(0, 1.0f - leftDiff / 5.0f, 1.0f - rightDiff / 5.0f);
-            if (leftDiff + rightDiff < 4)
+
+            ghostLeftQuat = Quaternion.Euler(g.leftFrequency);
+            ghostRightQuat = Quaternion.Euler(g.rightFrequency);
+
+            antennaLeftQuat = Quaternion.Euler(ar.leftAntenna.eulerAngles);
+            antennaRightQuat = Quaternion.Euler(ar.rightAntenna.eulerAngles);
+
+            leftDiff = Quaternion.Angle(ghostLeftQuat, antennaLeftQuat);
+            rightDiff = Quaternion.Angle(ghostRightQuat, antennaRightQuat);
+
+            leftDiff = 180.0f - leftDiff;
+            rightDiff = 180.0f - rightDiff;
+
+            Debug.Log(rightDiff);
+            Debug.Log(leftDiff);
+            Debug.Log(g.channel);
+
+            if ((leftDiff < 5.0f || rightDiff < 5.0f) && (g.channel == currentChannel))
             {
-                g1.charging = true;
-                g1.FillVacTube();
-                if (g1.vacTube.localScale.z >= 1)
+                GamePad.SetVibration(0, 1.0f - leftDiff / 5.0f, 1.0f - rightDiff / 5.0f);
+                if (leftDiff + rightDiff < 4)
                 {
-                    Debug.Log("YOU WON");
-                    interactableTV = false;
+                    g.charging = true;
+                    g.FillVacTube();
+                    if (g.vacTube.localScale.z >= 1)
+                    {
+                        Debug.Log("YOU WON");
+                        interactableTV = false;
+                    }
+                }
+                else
+                {
+                    g.CheckVacTube();
+                    g.charging = false;
                 }
             }
             else
             {
-                g1.CheckVacTube();
-                g1.charging = false;
+                GamePad.SetVibration(0, 0, 0);
             }
         }
-        else
+    }
+
+    void ProcessChannel()
+    {
+        int lastChannel = currentChannel;
+        if(gpState.DPad.Up == ButtonState.Pressed)
         {
-            GamePad.SetVibration(0, 0, 0);
+            currentChannel = 0;
         }
+        else if(gpState.DPad.Right == ButtonState.Pressed)
+        {
+            currentChannel = 1;
+        }else if(gpState.DPad.Down == ButtonState.Pressed)
+        {
+            currentChannel = 2;
+        }else if(gpState.DPad.Left == ButtonState.Pressed)
+        {
+            currentChannel = 3;
+        }
+
+        if (lastChannel != currentChannel){
+            dial.transform.localRotation = Quaternion.Euler(90 * currentChannel, 90, -90);
+        }
+        
     }
 
     void FreshStart()
@@ -133,6 +186,33 @@ public class GameManager : MonoBehaviour {
 
         // Switch from "press _ to start" to controls
         StartCoroutine(showControls());
+    }
+
+    void NextRound()
+    {
+        roundIndex++;
+        foreach(List<Ghost> l in ghostRounds)
+        {
+            if (ghostRounds.IndexOf(l) != roundIndex)
+            {
+                foreach(Ghost g in l)
+                {
+                    g.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                foreach (Ghost g in l)
+                {
+                    g.gameObject.SetActive(true);
+                }
+            }
+        }
+
+        if(roundIndex > 0)
+        {
+
+        }
     }
 
     // Show controls for a bit

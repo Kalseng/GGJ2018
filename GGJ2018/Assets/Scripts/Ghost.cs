@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Ghost : MonoBehaviour {
 
-    public AudioClip broadcastAudio;
+    public AudioSource ghostSource;
     public Texture2D ghostPicture;
     public Transform vacTube;
 
@@ -37,12 +37,18 @@ public class Ghost : MonoBehaviour {
 
     public void RandomizeFrequency()
     {
-        leftFrequency.x = Random.value * -30;
-        leftFrequency.y = Random.value * -30;
+        float xRand = (Random.value);
+        float yRand = ((1 - Mathf.Abs(xRand)) * Random.value);
+
+        leftFrequency.x = xRand * -30;
+        leftFrequency.y = yRand * -30;
         leftFrequency.z = 0;
 
-        rightFrequency.x = Random.value * 30;
-        rightFrequency.y = Random.value * 30;
+        xRand = Random.value;
+        yRand = (1 - xRand) * Random.value;
+
+        rightFrequency.x = xRand * 30;
+        rightFrequency.y = yRand * 30;
         rightFrequency.z = 0;
     }
 
