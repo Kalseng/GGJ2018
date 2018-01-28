@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour {
     public Ghost g1;
     public AntennaRotator ar;
     public Transform vt;
+    public GameObject pressToStart, controls;
     public float maxVacCharge; // In seconds
 
     // For managing interaction on/off state.
@@ -44,6 +45,9 @@ public class GameManager : MonoBehaviour {
         ghostRounds.Add(ghostList3);
         ghostRounds.Add(ghostList4);
         */
+
+        // Don't show controls at start
+        controls.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -126,5 +130,18 @@ public class GameManager : MonoBehaviour {
         g1.leftFrequency += ar.leftAntennaRotationStart;
 
         roundStartTime = Time.time;
+
+        // Switch from "press _ to start" to controls
+        StartCoroutine(showControls());
+    }
+
+    // Show controls for a bit
+    //TODO: alpha tween
+    //TODO: go away faster if player moves sticks
+    private IEnumerator showControls() {
+        pressToStart.SetActive(false);
+        controls.SetActive(true);
+        yield return new WaitForSeconds(5f);
+        controls.SetActive(false);
     }
 }
