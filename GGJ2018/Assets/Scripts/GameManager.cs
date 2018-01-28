@@ -146,7 +146,15 @@ public class GameManager : MonoBehaviour {
 
             leftDiff = 180.0f - leftDiff;
             rightDiff = 180.0f - rightDiff;
+            
+            // Very good code that changes the static intensity based on how close you are to succeeding
+            TVScreenPictureController tvspc = FindObjectOfType<TVScreenPictureController>();
+            float intensity = (leftDiff + rightDiff) / 36;
+            tvspc.setStaticIntensity(intensity);
 
+            Debug.Log(rightDiff);
+            Debug.Log(leftDiff);
+            Debug.Log(g.channel);
 
             if ((leftDiff < 5.0f || rightDiff < 5.0f) && (g.channel == currentChannel))
             {
