@@ -33,31 +33,55 @@ public class GameManager : MonoBehaviour {
 
     private float roundStartTime;
 
+    public AudioSource clientSource;
+
     // Lists of ghosts for rounds, denomonated by last number.
     // In the inspector, when assigning ghosts to spaces in the list, keep
     // in mind the ghost in index 0 is the "main ghost", and subsequent ghosts
     // are "sidequest ghosts".
     private List<List<Ghost>> ghostRounds;
+
+    public List<AudioClip> clientClips;
     public List<Ghost> ghostList1, ghostList2, ghostList3, ghostList4;
 
     // Round index
-    public int roundIndex = 0;
+    public int roundIndex = -1;
 
 	// Use this for initialization
 	void Start () {
+
+        
 
         // Set gpState to the gamepad state of the first player.
         gpState = GamePad.GetState(0);
 
 
         // Instantiates ghostRounds list and stores other ghost lists
-        ghostRounds = new List<List<Ghost>>();
+        ghostRounds = new List<List<Ghost>>() { ghostList1, ghostList2, ghostList3, ghostList4 };
 
-        ghostRounds.Add(ghostList1);
-        ghostRounds.Add(ghostList2);
-        ghostRounds.Add(ghostList3);
-        ghostRounds.Add(ghostList4);
+        //
         
+        foreach (List<Ghost> l in ghostRounds)
+        {
+            List<int> nums = new List<int>() { 0, 1, 2, 3 };
+            foreach(Ghost g in l)
+            {
+                int c = Random.Range(0, nums.Count-1);
+                g.channel = nums[c];
+                nums.RemoveAt(c);
+
+                g.RandomizeFrequency();
+
+                g.rightFrequency += ar.rightAntennaRotationStart;
+                g.leftFrequency += ar.leftAntennaRotationStart;
+                
+                if (ghostRounds.IndexOf(l) == 0)
+                {
+                }
+
+            }
+            nums.Clear();
+        }
 
         // Don't show controls at start
         controls.SetActive(false);
@@ -72,7 +96,9 @@ public class GameManager : MonoBehaviour {
         // Debugging tool for initiating a dummie round
         if (Input.GetButtonDown("Start"))
         {
-            FreshStart();
+
+            // FreshStart();
+            StartCoroutine(NextRound());
         }
 
         // Controls TV interaction. Deactivates sex toy mode on 
@@ -104,6 +130,8 @@ public class GameManager : MonoBehaviour {
 
         ar.ProessRotation();
 
+        Ghost lastghost = new Ghost();
+
         foreach (Ghost g in ghostRounds[roundIndex])
         {
 
@@ -119,21 +147,30 @@ public class GameManager : MonoBehaviour {
             leftDiff = 180.0f - leftDiff;
             rightDiff = 180.0f - rightDiff;
 
-            Debug.Log(rightDiff);
-            Debug.Log(leftDiff);
-            Debug.Log(g.channel);
 
             if ((leftDiff < 5.0f || rightDiff < 5.0f) && (g.channel == currentChannel))
             {
+                lastghost = g;
                 GamePad.SetVibration(0, 1.0f - leftDiff / 5.0f, 1.0f - rightDiff / 5.0f);
-                if (leftDiff + rightDiff < 4)
+                Debug.Log((10.0f - (leftDiff + rightDiff)) / 10.0f);
+                if (leftDiff + rightDiff < 10)
+                {
+                    g.ghostSource.volume = ((10.0f - (leftDiff + rightDiff)) / 10.0f)/2 + 5;
+                }
+                if (leftDiff + rightDiff < 5)
                 {
                     g.charging = true;
                     g.FillVacTube();
                     if (g.vacTube.localScale.z >= 1)
                     {
-                        Debug.Log("YOU WON");
-                        interactableTV = false;
+                        if(ghostRounds[roundIndex].IndexOf(g) == 0)
+                        {
+                            StartCoroutine(NextRound());
+                        }
+                        else
+                        {
+                            g.gameObject.SetActive(false);
+                        }
                     }
                 }
                 else
@@ -144,6 +181,10 @@ public class GameManager : MonoBehaviour {
             }
             else
             {
+                if (lastghost != null)
+                {
+                    lastghost.ghostSource.volume = 0;
+                }
                 GamePad.SetVibration(0, 0, 0);
             }
         }
@@ -177,25 +218,27 @@ public class GameManager : MonoBehaviour {
     {
         interactableTV = true;
 
-        g1.RandomizeFrequency();
-
-        g1.rightFrequency += ar.rightAntennaRotationStart;
-        g1.leftFrequency += ar.leftAntennaRotationStart;
-
         roundStartTime = Time.time;
 
-        // Switch from "press _ to start" to controls
-        StartCoroutine(showControls());
     }
 
-    void NextRound()
+    IEnumerator NextRound()
     {
+        interactableTV = false;
         roundIndex++;
-        foreach(List<Ghost> l in ghostRounds)
+
+        if(roundIndex == 0)
+        {
+
+            // Switch from "press _ to start" to controls
+            StartCoroutine(showControls());
+        }
+
+        foreach (List<Ghost> l in ghostRounds)
         {
             if (ghostRounds.IndexOf(l) != roundIndex)
             {
-                foreach(Ghost g in l)
+                foreach (Ghost g in l)
                 {
                     g.gameObject.SetActive(false);
                 }
@@ -209,10 +252,22 @@ public class GameManager : MonoBehaviour {
             }
         }
 
-        if(roundIndex > 0)
-        {
+        Debug.Log("finished activating/deactivating ghosts");
 
+        if (roundIndex > 0)
+        {
+            clientSource.clip = clientClips[roundIndex - 1];
+            Debug.Log("Set client clip");
+            clientSource.Play();
+            Debug.Log("Playing lient clip");
+            yield return new WaitForSeconds(clientClips[roundIndex].length);
         }
+
+        Debug.Log("Interaction possible");
+        interactableTV = true;
+
+        Debug.Log("Setting start time.");
+        roundStartTime = Time.time;
     }
 
     // Show controls for a bit

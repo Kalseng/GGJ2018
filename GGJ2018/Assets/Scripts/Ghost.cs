@@ -19,6 +19,8 @@ public class Ghost : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
+        ghostSource = this.gameObject.GetComponent<AudioSource>();
         if (vacTube == null)
         {
             vacTube = GameObject.Find("GhostBody").transform;
@@ -37,18 +39,12 @@ public class Ghost : MonoBehaviour {
 
     public void RandomizeFrequency()
     {
-        float xRand = (Random.value);
-        float yRand = ((1 - Mathf.Abs(xRand)) * Random.value);
-
-        leftFrequency.x = xRand * -30;
-        leftFrequency.y = yRand * -30;
+        leftFrequency.x = Random.value * -30;
+        leftFrequency.y = Random.value * -30;
         leftFrequency.z = 0;
 
-        xRand = Random.value;
-        yRand = (1 - xRand) * Random.value;
-
-        rightFrequency.x = xRand * 30;
-        rightFrequency.y = yRand * 30;
+        rightFrequency.x = Random.value * 30;
+        rightFrequency.y = Random.value * 30;
         rightFrequency.z = 0;
     }
 

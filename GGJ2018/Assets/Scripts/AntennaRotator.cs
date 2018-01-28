@@ -25,6 +25,8 @@ public class AntennaRotator : MonoBehaviour {
         float lhDegree = Input.GetAxis("HorizontalLeft") * -1 * sensitivityModifier;
         float lvDegree = Input.GetAxis("VerticalLeft") * -1 * sensitivityModifier;
 
+        Debug.Log(Input.GetAxis("HorizontalRight") + Input.GetAxis("VerticalRight"));
+
         float rhDegree = Input.GetAxis("HorizontalRight") * sensitivityModifier;
         float rvDegree = Input.GetAxis("VerticalRight") * sensitivityModifier;
 
