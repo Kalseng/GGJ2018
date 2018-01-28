@@ -14,7 +14,7 @@ public class TVScreenPictureController : MonoBehaviour {
 		setStaticIntensity(initialStaticIntensity);
 	}
 
-	private void setStaticIntensity(float intensity) {
+	public void setStaticIntensity(float intensity) {
 		staticImage.color = new Color(1, 1, 1, intensity);
 	}
 }
